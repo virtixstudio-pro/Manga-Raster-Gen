@@ -15,22 +15,25 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install dependencies
+    - name: Install System Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk
+        sudo apt-get install -y ccache git libffi-dev libssl-dev python3-dev zip unzip openjdk-17-jdk build-essential libltdl-dev libxml2-dev libxslt1-dev zlib1g-dev
 
-    - name: Accept Android SDK Licenses
+    - name: Install Buildozer and Python Dependencies
       run: |
-        yes | sdkmanager --sdk_root=$HOME/android-sdk --licenses || true
-
-    - name: Install Buildozer & Tools
-      run: |
+        pip install --upgrade pip
         pip install --upgrade buildozer cython kivy pillow
 
     - name: Build APK with Buildozer
       run: |
-        yes | buildozer android debug
+        yes | buildozer -v android debug
+
+    - name: Print Build Logs on Failure
+      if: failure()
+      run: |
+        echo "=== LAST 200 LINES OF BUILDOZER LOG ==="
+        tail -n 200 .buildozer/android/platform/build-*/build.log || true
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
