@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.MangaRasterGen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#BB86FC</item>
+        <item name="colorSecondary">#03DAC6</item>
+        <item name="android:statusBarColor">#121212</item>
+    </style>
+</resources>
