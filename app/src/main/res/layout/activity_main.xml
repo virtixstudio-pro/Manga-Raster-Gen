@@ -7,18 +7,16 @@
     android:background="#121212"
     android:padding="16dp">
 
-    <!-- En-tête -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Manga Raster Gen"
+        android:text="RasterX Studio"
         android:textColor="#FFFFFF"
         android:textSize="22sp"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginBottom="12dp" />
 
-    <!-- Carte de prévisualisation avec coins arrondis -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -36,25 +34,11 @@
             android:scaleType="fitCenter" />
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Contrôles -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginTop="12dp">
-
-        <!-- Modeste texte ou réglages -->
-        <EditText
-            android:id="@+id/inputOverlayText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Texte de la case..."
-            android:textColorHint="#777777"
-            android:textColor="#FFFFFF"
-            android:background="#252525"
-            android:padding="10dp"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp"/>
 
         <TextView
             android:id="@+id/densityLabel"
@@ -74,7 +58,6 @@
             app:thumbColor="#BB86FC"
             app:trackColorActive="#BB86FC" />
 
-        <!-- Sélection de mode en boutons horizontaux -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -111,21 +94,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:text="Case + Texte"
+                    android:text="Case"
                     android:textColor="#FFFFFF"
                     app:strokeColor="#BB86FC"/>
             </LinearLayout>
         </HorizontalScrollView>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnExport"
+            android:id="@+id/btnExportNst"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="EXPORTER IMAGE HD"
+            android:text="EXPORTER FORMAT .NST"
             android:textSize="14sp"
             android:textStyle="bold"
             app:cornerRadius="12dp"
-            app:backgroundTint="#03DAC6"
+            app:backgroundTint="#BB86FC"
             android:textColor="#000000"/>
     </LinearLayout>
 </LinearLayout>

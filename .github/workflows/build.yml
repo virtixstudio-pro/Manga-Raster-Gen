@@ -1,4 +1,4 @@
-name: Build Android Java APK
+name: Build RasterX Studio APK
 
 on:
   push:
@@ -25,5 +25,5 @@ jobs:
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: MangaRasterGen-Java-APK
+        name: RasterXStudio-v1.0.0
         path: app/build/outputs/apk/debug/app-debug.apk

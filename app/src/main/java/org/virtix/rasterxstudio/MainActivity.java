@@ -1,16 +1,15 @@
-package org.virtix.mangarastergen;
+package org.virtix.rasterxstudio;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.widget.EditText;
+import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
@@ -20,12 +19,14 @@ public class MainActivity extends AppCompatActivity {
     private ImageView previewImageView;
     private Slider densitySlider;
     private TextView densityLabel;
-    private EditText inputOverlayText;
     
     private String currentMode = "radial";
     private int densityValue = 50;
-    private String customText = "";
+    
+    private float touchX = 400f;
+    private float touchY = 400f;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
         previewImageView = findViewById(R.id.previewImageView);
         densitySlider = findViewById(R.id.densitySlider);
         densityLabel = findViewById(R.id.densityLabel);
-        inputOverlayText = findViewById(R.id.inputOverlayText);
 
         MaterialButton btnRadial = findViewById(R.id.btnModeRadial);
         MaterialButton btnDots = findViewById(R.id.btnModeDots);
         MaterialButton btnBox = findViewById(R.id.btnModeBox);
+        MaterialButton btnExportNst = findViewById(R.id.btnExportNst);
 
         btnRadial.setOnClickListener(v -> { currentMode = "radial"; renderPreview(); });
         btnDots.setOnClickListener(v -> { currentMode = "dots"; renderPreview(); });
@@ -50,14 +51,21 @@ public class MainActivity extends AppCompatActivity {
             renderPreview();
         });
 
-        inputOverlayText.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                customText = s.toString();
-                renderPreview();
+        previewImageView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
+                float viewWidth = previewImageView.getWidth();
+                float viewHeight = previewImageView.getHeight();
+                
+                if (viewWidth > 0 && viewHeight > 0) {
+                    touchX = (event.getX() / viewWidth) * 800f;
+                    touchY = (event.getY() / viewHeight) * 800f;
+                    renderPreview();
+                }
             }
-            @Override public void afterTextChanged(Editable s) {}
+            return true;
         });
+
+        btnExportNst.setOnClickListener(v -> generateNstFormat());
 
         renderPreview();
     }
@@ -71,24 +79,21 @@ public class MainActivity extends AppCompatActivity {
 
         Paint paint = new Paint();
         paint.setAntiAlias(true);
+        paint.setColor(Color.BLACK);
 
         if (currentMode.equals("radial")) {
-            paint.setColor(Color.BLACK);
             paint.setStrokeWidth(3f);
-            float cx = width / 2f;
-            float cy = height / 2f;
-            float maxR = (float) Math.hypot(cx, cy);
+            float maxR = (float) Math.hypot(width, height);
 
             for (int i = 0; i < densityValue; i++) {
                 double angle = (2 * Math.PI / densityValue) * i;
-                float x1 = cx + (float) Math.cos(angle) * (maxR * 0.25f);
-                float y1 = cy + (float) Math.sin(angle) * (maxR * 0.25f);
-                float x2 = cx + (float) Math.cos(angle) * maxR;
-                float y2 = cy + (float) Math.sin(angle) * maxR;
+                float x1 = touchX + (float) Math.cos(angle) * (maxR * 0.15f);
+                float y1 = touchY + (float) Math.sin(angle) * (maxR * 0.15f);
+                float x2 = touchX + (float) Math.cos(angle) * maxR;
+                float y2 = touchY + (float) Math.sin(angle) * maxR;
                 canvas.drawLine(x1, y1, x2, y2, paint);
             }
         } else if (currentMode.equals("dots")) {
-            paint.setColor(Color.BLACK);
             int spacing = Math.max(12, 600 / (densityValue + 1));
             for (int y = 20; y < height; y += spacing) {
                 for (int x = 20; x < width; x += spacing) {
@@ -96,23 +101,23 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         } else if (currentMode.equals("box")) {
-            // Tracé d'une case Manga stylisée (cadre épais)
-            paint.setColor(Color.BLACK);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(12f);
             canvas.drawRect(40, 40, width - 40, height - 40, paint);
-
-            // Texte superposé
-            if (!customText.isEmpty()) {
-                Paint textPaint = new Paint();
-                textPaint.setColor(Color.BLACK);
-                textPaint.setTextSize(48f);
-                textPaint.setAntiAlias(true);
-                textPaint.setTextAlign(Paint.Align.CENTER);
-                canvas.drawText(customText, width / 2f, height / 2f, textPaint);
-            }
         }
 
         previewImageView.setImageBitmap(bitmap);
+    }
+
+    private void generateNstFormat() {
+        String nstContent = "RASTERX_STUDIO_NST_V1\n" +
+                "ECOSYSTEM:VIRTIX\n" +
+                "MODE:" + currentMode + "\n" +
+                "CENTER_X:" + touchX + "\n" +
+                "CENTER_Y:" + touchY + "\n" +
+                "DENSITY:" + densityValue + "\n" +
+                "END_OF_BLOCK";
+
+        Toast.makeText(this, "Format .nst généré pour l'écosystème !", Toast.LENGTH_LONG).show();
     }
 }
